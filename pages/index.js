@@ -1,34 +1,8 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
+import React from 'react';
+import { useRouter } from 'next/router';
 import appConfig from '../config.json';
 
-function GlobalStyle() {
-    return (
-        <style global jsx>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          list-style: none;
-        }
-        body {
-          font-family: 'Open Sans', sans-serif;
-        }
-        /* App fit Height */ 
-        html, body, #__next {
-          min-height: 100vh;
-          display: flex;
-          flex: 1;
-        }
-        #__next {
-          flex: 1;
-        }
-        #__next > * {
-          flex: 1;
-        }
-        /* ./App fit Height */ 
-      `}</style>
-    );
-}
 
 function Title(props) {
     const Tag = props.tag || 'h1';
@@ -62,11 +36,14 @@ function HomePage() {
 export default HomePage; */
 
 export default function PaginaInicial() {
-    const username = 'lucaasmeiraf';
+    //const username = 'lucaasmeiraf';
+    const [username, setUsername] = React.useState('lucaasmeiraf');
+    const roteamento = useRouter();
+
 
     return (
         <>
-            <GlobalStyle />
+            
             <Box
                 styleSheet={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -93,6 +70,12 @@ export default function PaginaInicial() {
                     {/* Formulário */}
                     <Box
                         as="form"
+                        onSubmit={function(infosDoEvento){
+                            infosDoEvento.preventDefault();
+                            console.log('Alguém submeteu o form.');
+                            roteamento.push('/chat');
+                            /* window.location.href = '/chat'; */
+                        }}
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                             width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -103,7 +86,30 @@ export default function PaginaInicial() {
                             {appConfig.name}
                         </Text>
 
+                        {/* <input 
+                            type="text"
+                            value={username}
+                            onChange={function (evento){
+                                console.log('Usuário Digitou', evento.target.value)
+                                //Onde está o valor
+                                const valor = evento.target.value;
+                                //Trocar o valor da variavel
+                                //através do react e avisa quem precisa
+                                setUsername(valor);
+                            }}
+                        /> */}
+
                         <TextField
+                        value={username}
+                        onChange={function (evento){
+                            console.log('Usuário Digitou', evento.target.value)
+                            //Onde está o valor
+                            const valor = evento.target.value;
+                            //Trocar o valor da variavel
+                            //através do react e avisa quem precisa
+                            setUsername(valor);
+                            
+                        }}
                             fullWidth
                             textFieldColors={{
                                 neutral: {
@@ -135,8 +141,8 @@ export default function PaginaInicial() {
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            maxWidth: '200px',
-                            padding: '16px',
+                            maxWidth: '250px',
+                            padding: '70px',
                             backgroundColor: appConfig.theme.colors.neutrals[800],
                             border: '1px solid',
                             borderColor: appConfig.theme.colors.neutrals[999],
@@ -155,7 +161,7 @@ export default function PaginaInicial() {
                         <Text
                             variant="body4"
                             styleSheet={{
-                                color: appConfig.theme.colors.neutrals[200],
+                                color: appConfig.theme.colors.neutrals['200'],
                                 backgroundColor: appConfig.theme.colors.neutrals[900],
                                 padding: '3px 10px',
                                 borderRadius: '1000px'
