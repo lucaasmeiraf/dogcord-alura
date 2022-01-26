@@ -1,6 +1,7 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 import React from 'react';
 import { useRouter } from 'next/router';
+import { SiGithub } from 'react-icons/si';
 import appConfig from '../config.json';
 
 
@@ -37,9 +38,10 @@ export default HomePage; */
 
 export default function PaginaInicial() {
     //const username = 'lucaasmeiraf';
-    const [username, setUsername] = React.useState('');
+    const [username, setUsername] = React.useState('lucaasmeiraf');
     const roteamento = useRouter();
-    const image = "https://avatars.githubusercontent.com/u/96804494?v=4";
+    const [userLocation, setUserLocation] = React.useState(`Brasília, DF`);
+
 
     return (
         <>
@@ -114,11 +116,20 @@ export default function PaginaInicial() {
                             placeholder='Usuário AuAu do GitHub'
                             value={username}
                             onChange={function (evento) {
-                                //Onde está o valor
-                                const valor = evento.target.value;
-                                //Trocar o valor da variavel
-                                //através do react e avisa quem precisa
-                                setUsername(valor);
+                                const valor = evento.target.value; //Onde está o valor
+
+                                if (!valor.length < 2) {
+                                    setUsername(valor) //Trocar o valor da variavel através do react e avisa quem precisa
+                                    fetch(`https://api.github.com/users/${valor}`)
+                                        .then(response => response.json())
+                                        .then(data => { setUserLocation(data.location) })
+
+                                } else {
+                                    setUsername('lucaasmieraf');
+                                    setUserLocation('Brasilia, DF');
+                                }
+
+
 
                             }}
                             fullWidth
@@ -169,8 +180,9 @@ export default function PaginaInicial() {
                                 borderRadius: '50%',
                                 marginBottom: '16px',
                             }}
-                            src={username.length > 2 ? `https://github.com/${username}.png` : image}
+                            src={username.length > 2 ? `https://github.com/${username}.png` : `https://github.com/lucaasmeiraf.png`}
                         />
+
                         <Text
                             variant="body4"
                             styleSheet={{
@@ -180,7 +192,19 @@ export default function PaginaInicial() {
                                 borderRadius: '1000px'
                             }}
                         >
-                            {username.length < 2 ? "" : username}
+                            <SiGithub />&nbsp;{username.length < 3 ? 'lucaasmeiraf' : username}
+                        </Text>
+
+                        <Text
+                            variant="body4"
+                            styleSheet={{
+                                color: appConfig.theme.colors.neutrals['200'],
+                                backgroundColor: appConfig.theme.colors.neutrals[900],
+                                padding: '3px 10px',
+                                borderRadius: '1000px'
+                            }}
+                        >
+                            {username.length < 3 ? 'Brasilia, DF' : userLocation} 
                         </Text>
                     </Box>
                     {/* Photo Area */}
