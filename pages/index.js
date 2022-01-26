@@ -37,19 +37,23 @@ export default HomePage; */
 
 export default function PaginaInicial() {
     //const username = 'lucaasmeiraf';
-    const [username, setUsername] = React.useState('lucaasmeiraf');
+    const [username, setUsername] = React.useState('');
     const roteamento = useRouter();
-
+    const image = "https://avatars.githubusercontent.com/u/96804494?v=4";
 
     return (
         <>
-            
+
             <Box
                 styleSheet={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     backgroundColor: appConfig.theme.colors.primary[300],
                     backgroundImage: 'url(https://cutewallpaper.org/21/doge-wallpapers/Doge-Meme-Wallpaper-85-images-.jpg)',
-                    backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover',
+                    backgroundBlendMode: 'multiply',
                 }}
             >
                 <Box
@@ -70,19 +74,25 @@ export default function PaginaInicial() {
                     {/* Formulário */}
                     <Box
                         as="form"
-                        onSubmit={function(infosDoEvento){
+                        onSubmit={function (infosDoEvento) {
                             infosDoEvento.preventDefault();
-                            console.log('Alguém submeteu o form.');
                             roteamento.push('/chat');
-                            /* window.location.href = '/chat'; */
                         }}
                         styleSheet={{
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                            width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: { xs: '100%', sm: '50%' },
+                            textAlign: 'center',
+                            marginBottom: '32px',
                         }}
                     >
                         <Title tag="h2">Au auau auau</Title>
-                        <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
+                        <Text variant="body3" styleSheet={{
+                            marginBottom: '32px',
+                            color: appConfig.theme.colors.neutrals[300]
+                        }}>
                             {appConfig.name}
                         </Text>
 
@@ -100,16 +110,17 @@ export default function PaginaInicial() {
                         /> */}
 
                         <TextField
-                        value={username}
-                        onChange={function (evento){
-                            console.log('Usuário Digitou', evento.target.value)
-                            //Onde está o valor
-                            const valor = evento.target.value;
-                            //Trocar o valor da variavel
-                            //através do react e avisa quem precisa
-                            setUsername(valor);
-                            
-                        }}
+                            required
+                            placeholder='Usuário AuAu do GitHub'
+                            value={username}
+                            onChange={function (evento) {
+                                //Onde está o valor
+                                const valor = evento.target.value;
+                                //Trocar o valor da variavel
+                                //através do react e avisa quem precisa
+                                setUsername(valor);
+
+                            }}
                             fullWidth
                             textFieldColors={{
                                 neutral: {
@@ -120,6 +131,7 @@ export default function PaginaInicial() {
                                 },
                             }}
                         />
+
                         <Button
                             type='submit'
                             label='Entrar'
@@ -142,13 +154,14 @@ export default function PaginaInicial() {
                             flexDirection: 'column',
                             alignItems: 'center',
                             maxWidth: '250px',
-                            padding: '70px',
+                            padding: '50px',
                             backgroundColor: appConfig.theme.colors.neutrals[800],
                             border: '1px solid',
                             borderColor: appConfig.theme.colors.neutrals[999],
                             borderRadius: '10px',
                             flex: 1,
                             minHeight: '240px',
+                            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.6)",
                         }}
                     >
                         <Image
@@ -156,7 +169,7 @@ export default function PaginaInicial() {
                                 borderRadius: '50%',
                                 marginBottom: '16px',
                             }}
-                            src={`https://github.com/${username}.png`}
+                            src={username.length > 2 ? `https://github.com/${username}.png` : image}
                         />
                         <Text
                             variant="body4"
@@ -167,7 +180,7 @@ export default function PaginaInicial() {
                                 borderRadius: '1000px'
                             }}
                         >
-                            {username}
+                            {username.length < 2 ? "" : username}
                         </Text>
                     </Box>
                     {/* Photo Area */}
