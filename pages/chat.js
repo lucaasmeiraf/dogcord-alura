@@ -55,7 +55,7 @@ export default function ChatPage() {
                         padding: '16px',
                     }}
                 >
-                    <MensagemList mensagens={mensagemList} />
+                    <MensagemList mensagens={mensagemList} setMensagemList={setMensagemList}/>
                     {/* {mensagemList.map((mensagemAtual) => {
                         console.log(mensagemAtual);
                         return (
@@ -152,23 +152,20 @@ function MensagemList(props) {
     
     function handleRemovedMsg(messageId) {
         
-        let novaLista = props.mensagens.filter((message) => {
-            if (message.id != messageId) {
-                console.log(message.id)
+        let novaLista = props.mensagens.filter((mensagem) => {
+            if (mensagem.id != messageId) {
+                console.log(mensagem.id)
                 console.log(messageId)
-                return message;
+                return mensagem;
             }    
         })
-        props.setListaDeMensagens([
+        props.setMensagemList([
             ...novaLista
         ])
     }
 
     return (
-        <Box as = "form"
-            onSubmit={function (apagarMsg) {
-                apagarMsg.preventDefault();
-            }}
+        <Box 
             tag="ul"
             styleSheet={{
                 overflow: 'auto',
@@ -225,28 +222,33 @@ function MensagemList(props) {
                             >
                                 {(new Date().toLocaleDateString())}
                             </Text>
-                            <Button
-
-                                onClick={() =>{
-                                    handleRemovedMsg(messageId);
+                            <Button     
+                                onClick={ ()=> {
+                                    
+                                    handleRemovedMsg(mensagem.id)
+                                }}                          
+                                buttonColors={{
+                                    contrastColor: appConfig.theme.colors.neutrals["000"],
+                                    mainColor: appConfig.theme.colors.primary[1010],
+                                    mainColorLight: appConfig.theme.colors.primary[400],
+                                    mainColorStrong: appConfig.theme.colors.primary[1020],
                                 }}
-
-                            type='submit'
-                            label='x'
-                            styleSheet={{
-                                width: '2%',
-                                height: '15px',
-                                padding: '3px 2px',
-                                borderRadius: '6px',
-                                marginLeft: '1440px',
-                                marginBottom: '5px',
-                                
-                                contrastColor: appConfig.theme.colors.neutrals["000"],
-                                mainColor: appConfig.theme.colors.primary[500],
-                                mainColorLight: appConfig.theme.colors.primary[400],
-                                mainColorStrong: appConfig.theme.colors.primary[600],
-                            }}
-                            >
+                                label='x'
+                                styleSheet={{
+                                    borderRadius: "50%",
+                                    height: "30px",
+                                    marginLeft: "90%",
+                                    paddingLeft: "20px",
+                                    marginRight: "0",
+                                    width: "20px",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-end",
+                                    alignItems: "center",
+                                    position: "relative",
+                                    top: "-30px",
+                                    background: "none"
+                                }}>
 
                             </Button>
                         </Box>
