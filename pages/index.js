@@ -1,5 +1,5 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { SiGithub } from 'react-icons/si';
 import appConfig from '../config.json';
@@ -21,26 +21,12 @@ function Title(props) {
     );
 }
 
-/* Componente React
-function HomePage() {
-    //JSX
-    return (
-        <div>
-            <GlobalStyle />
-            <Title tag="h2">Boas vindas de volta!</Title>
-            <h2>Discord - Alura Matrix</h2>
-        </div>
-    );
-
-}
-
-export default HomePage; */
-
 export default function PaginaInicial() {
     //const username = 'lucaasmeiraf';
-    const [username, setUsername] = React.useState('lucaasmeiraf');
+    const [username, setUsername] = React.useState('');
     const roteamento = useRouter();
-    const [userLocation, setUserLocation] = React.useState(`Brasília, DF`);
+    const [userLocation, setUserLocation] = React.useState('');
+    const lucas = 'lucaasmeiraf';
 
 
     return (
@@ -98,39 +84,22 @@ export default function PaginaInicial() {
                             {appConfig.name}
                         </Text>
 
-                        {/* <input 
-                            type="text"
-                            value={username}
-                            onChange={function (evento){
-                                console.log('Usuário Digitou', evento.target.value)
-                                //Onde está o valor
-                                const valor = evento.target.value;
-                                //Trocar o valor da variavel
-                                //através do react e avisa quem precisa
-                                setUsername(valor);
-                            }}
-                        /> */}
-
                         <TextField
                             required
                             placeholder='Usuário AuAu do GitHub'
                             value={username}
                             onChange={function (evento) {
                                 const valor = evento.target.value; //Onde está o valor
+                                fetch(`https://api.github.com/users/${valor}`)
+                                    .then(response => response.json())
+                                    .then(data => setUserLocation(data.location));
 
                                 if (!valor.length < 2) {
-                                    setUsername(valor) //Trocar o valor da variavel através do react e avisa quem precisa
-                                    fetch(`https://api.github.com/users/${valor}`)
-                                        .then(response => response.json())
-                                        .then(data => { setUserLocation(data.location) })
-
-                                } else {
+                                   setUsername(valor) //Trocar o valor da variavel através do react e avisa quem precisa
+                                } /* else {
                                     setUsername('lucaasmieraf');
-                                    setUserLocation('Brasilia, DF');
-                                }
-
-
-
+                                    setUserLocation('Brasil, Brasília-DF');
+                                } */
                             }}
                             fullWidth
                             textFieldColors={{
@@ -143,7 +112,7 @@ export default function PaginaInicial() {
                             }}
                         />
 
-                        <Button
+                        <Button disabled={username.length < 3}
                             type='submit'
                             label='Entrar'
                             fullWidth
@@ -183,6 +152,7 @@ export default function PaginaInicial() {
                             src={username.length > 2 ? `https://github.com/${username}.png` : `https://github.com/lucaasmeiraf.png`}
                         />
 
+                        <a href={`https://github.com/${username}`}>
                         <Text
                             variant="body4"
                             styleSheet={{
@@ -194,8 +164,10 @@ export default function PaginaInicial() {
                         >
                             <SiGithub />&nbsp;{username.length < 3 ? 'lucaasmeiraf' : username}
                         </Text>
-
-                        <Text
+                        </a>
+                        
+                        <Text 
+                        
                             variant="body4"
                             styleSheet={{
                                 color: appConfig.theme.colors.neutrals['200'],
@@ -204,8 +176,9 @@ export default function PaginaInicial() {
                                 borderRadius: '1000px'
                             }}
                         >
-                            {username.length < 3 ? 'Brasilia, DF' : userLocation} 
+                            {username.length < 2 ? 'Brasilia, DF' : userLocation}
                         </Text>
+                        
                     </Box>
                     {/* Photo Area */}
                 </Box>
