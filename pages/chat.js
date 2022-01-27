@@ -154,7 +154,6 @@ function MensagemList(props) {
         <Box as = "form"
             onSubmit={function (apagarMsg) {
                 apagarMsg.preventDefault();
-                
             }}
             tag="ul"
             styleSheet={{
@@ -220,7 +219,7 @@ function MensagemList(props) {
                                 height: '15px',
                                 padding: '3px 2px',
                                 borderRadius: '6px',
-                                marginLeft: '550px',
+                                marginLeft: '1440px',
                                 marginBottom: '5px',
                                 
                                 contrastColor: appConfig.theme.colors.neutrals["000"],
