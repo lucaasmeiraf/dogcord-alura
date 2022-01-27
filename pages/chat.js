@@ -83,11 +83,15 @@ export default function ChatPage() {
                                 setMensagem(valor);
                             }}
                             onKeyPress={(event) => { //Captura se a tecla Enter está sendo pressionada e executa a func
-                                if (event.key === 'Enter') {
+                                const tecla = event;
+                                if (tecla.key === 'Enter') {
                                     event.preventDefault();
+                                    if(mensagem.trim() != ''){
                                         handleNovaMensagem(mensagem);
+                                    }else{
+                                        setMensagem('')
                                     }
-                            }}
+                        }}}
                             placeholder="Insira sua mensagem aqui..."
                             type="textarea"
                             styleSheet={{
