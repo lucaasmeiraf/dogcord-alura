@@ -148,8 +148,22 @@ function Header() {
 }
 
 function MensagemList(props) {
-    console.log(props);
+    //console.log(props);
     
+    function handleRemovedMsg(messageId) {
+        
+        let novaLista = props.mensagens.filter((message) => {
+            if (message.id != messageId) {
+                console.log(message.id)
+                console.log(messageId)
+                return message;
+            }    
+        })
+        props.setListaDeMensagens([
+            ...novaLista
+        ])
+    }
+
     return (
         <Box as = "form"
             onSubmit={function (apagarMsg) {
@@ -212,6 +226,11 @@ function MensagemList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                             <Button
+
+                                onClick={() =>{
+                                    handleRemovedMsg(messageId);
+                                }}
+
                             type='submit'
                             label='x'
                             styleSheet={{
