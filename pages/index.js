@@ -26,7 +26,6 @@ export default function PaginaInicial() {
     const [username, setUsername] = React.useState('');
     const roteamento = useRouter();
     const [userLocation, setUserLocation] = React.useState('');
-    const lucas = 'lucaasmeiraf';
 
 
     return (

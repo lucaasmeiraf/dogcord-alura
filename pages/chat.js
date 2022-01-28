@@ -1,20 +1,56 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React, { useState } from 'react';
 import appConfig from '../config.json';
+import { MdDeleteOutline } from 'react-icons/md';
+import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
+
+// Como fazer AJAX: https://medium.com/@omariosouto/entendendo-como-fazer-ajax-com-a-fetchapi-977ff20da3c6
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+
+
 export default function ChatPage() {
     const [mensagem, setMensagem] = useState('');
     const [mensagemList, setMensagemList] = useState([]);
+    const router = useRouter();
+    const nomeLogado = router.query.username;
+
+    React.useEffect(() => {
+        supabaseClient
+        .from('mensagens')
+        .select('*')
+        .order('id', {ascending: false})
+        .then(({ data }) => {
+        console.log('Dados da consulta: ', data);
+        setMensagemList(data);
+    });
+    }, []); 
+    
 
     function handleNovaMensagem(novaMensagem) {
-        const mensagem = {
-            id: mensagemList.length + 1,
-            de: 'lucaasmeiraf',
+        const mensagemEnv = {
+           // id: mensagemList.length + 1,
+            de: nomeLogado,
             msg: novaMensagem,
         };
-        setMensagemList([
-            mensagem,
+
+        supabaseClient
+        .from('mensagens')
+        .insert([
+            mensagemEnv
+        ])
+
+        .then(({ data }) => {
+            console.log('Criando MSG: ', data)
+            setMensagemList([
+            data[0],
             ...mensagemList,
         ])
+        })
         setMensagem('');
     }
     
@@ -62,7 +98,6 @@ export default function ChatPage() {
                             <li key={mensagemAtual.id}>
                                 {mensagemAtual.de}: {mensagemAtual.msg}
                             </li>
-
                         );
                     })} */}
                     <Box 
@@ -143,7 +178,7 @@ function Header() {
                 <Button
                     variant='tertiary'
                     colorVariant='neutral'
-                    label='Logout'
+                    label='Sair'
                     href="/"
                 />
             </Box>
@@ -154,12 +189,20 @@ function Header() {
 function MensagemList(props) {
     //console.log(props);
     
-    function handleRemovedMsg(messageId) {
+    function deletarMsg(messageId) {
         
+        // apagando mensagem do servidor
+        supabaseClient
+        .from('mensagens')
+        .delete()
+        .match({id: messageId})
+        .then((resp) => {
+            console.log('Mensagem deletada: ', resp)
+        });
+
+        // apagando mensagem da tela
         let novaLista = props.mensagens.filter((mensagem) => {
             if (mensagem.id != messageId) {
-                console.log(mensagem.id)
-                console.log(messageId)
                 return mensagem;
             }    
         })
@@ -177,7 +220,7 @@ function MensagemList(props) {
                 flexDirection: 'column-reverse',
                 flex: 1,
                 color: appConfig.theme.colors.neutrals["000"],
-                marginBottom: '16px',
+                marginBottom: '15px',
             }}
         >
 
@@ -198,7 +241,7 @@ function MensagemList(props) {
                     >
                         <Box
                             styleSheet={{
-                                marginBottom: '8px',
+                                marginBottom: '-10px',
 
                             }}
                         >
@@ -211,7 +254,7 @@ function MensagemList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/lucaasmeiraf.png`}
+                                src={`https://github.com/${mensagem.de}.png`}
                             />
                             <Text tag="strong">
                                 {mensagem.de}
@@ -226,32 +269,22 @@ function MensagemList(props) {
                             >
                                 {(new Date().toLocaleDateString())}
                             </Text>
-                            <Button     
+
+                            <Button 
+                                type='button'
+                                label={<MdDeleteOutline />}
                                 onClick={ ()=> {
                                     
-                                    handleRemovedMsg(mensagem.id)
+                                    deletarMsg(mensagem.id)
                                 }}                          
-                                buttonColors={{
-                                    contrastColor: appConfig.theme.colors.neutrals["000"],
-                                    mainColor: appConfig.theme.colors.primary[1010],
-                                    mainColorLight: appConfig.theme.colors.primary[400],
-                                    mainColorStrong: appConfig.theme.colors.primary[1020],
-                                }}
-                                label='x'
                                 styleSheet={{
-                                    borderRadius: "50%",
-                                    height: "30px",
-                                    marginLeft: "90%",
-                                    paddingLeft: "20px",
-                                    marginRight: "0",
-                                    width: "20px",
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "flex-end",
-                                    alignItems: "center",
-                                    position: "relative",
-                                    top: "-30px",
-                                    background: "none"
+                                    height: '10px',
+                                    width: '20px',
+                                    marginLeft: '95%',
+                                    backgroundColor: appConfig.theme.colors.neutrals[800],
+                                    hover: {
+                                        backgroundColor: appConfig.theme.colors.neutrals[999],
+                                    }
                                 }}>
 
                             </Button>
