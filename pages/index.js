@@ -63,7 +63,7 @@ export default function PaginaInicial() {
                         as="form"
                         onSubmit={function (infosDoEvento) {
                             infosDoEvento.preventDefault();
-                            roteamento.push('/chat');
+                            roteamento.push(`/chat?username=${username}`);
                         }}
                         styleSheet={{
                             display: 'flex',
@@ -95,10 +95,7 @@ export default function PaginaInicial() {
 
                                 if (!valor.length < 2) {
                                    setUsername(valor) //Trocar o valor da variavel através do react e avisa quem precisa
-                                } /* else {
-                                    setUsername('lucaasmieraf');
-                                    setUserLocation('Brasil, Brasília-DF');
-                                } */
+                                }
                             }}
                             fullWidth
                             textFieldColors={{

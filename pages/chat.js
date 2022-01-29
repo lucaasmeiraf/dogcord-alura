@@ -4,6 +4,7 @@ import appConfig from '../config.json';
 import { MdDeleteOutline } from 'react-icons/md';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
 // Como fazer AJAX: https://medium.com/@omariosouto/entendendo-como-fazer-ajax-com-a-fetchapi-977ff20da3c6
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -11,13 +12,20 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-
+function escutaMsgEmTempoReal(adicionaMensagem){
+    return supabaseClient
+    .from('mensagens')
+    .on('INSERT', ({ res }) => {
+        adicionaMensagem(res.new)
+    })
+    .subscribe();
+}
 
 export default function ChatPage() {
+    const roteamento = useRouter();
+    const nomeLogado = roteamento.query.username;
     const [mensagem, setMensagem] = useState('');
     const [mensagemList, setMensagemList] = useState([]);
-    const router = useRouter();
-    const nomeLogado = router.query.username;
 
     React.useEffect(() => {
         supabaseClient
@@ -27,6 +35,15 @@ export default function ChatPage() {
         .then(({ data }) => {
         console.log('Dados da consulta: ', data);
         setMensagemList(data);
+    });
+
+    escutaMsgEmTempoReal((novaMensagem) => {
+        setMensagemList((valorAtualDaLista) =>{
+            return [
+                novaMensagem,
+                ...valorAtualDaLista,
+            ]
+        })
     });
     }, []); 
     
@@ -46,11 +63,7 @@ export default function ChatPage() {
 
         .then(({ data }) => {
             console.log('Criando MSG: ', data)
-            setMensagemList([
-            data[0],
-            ...mensagemList,
-        ])
-        })
+        });
         setMensagem('');
     }
     
@@ -92,14 +105,6 @@ export default function ChatPage() {
                     }}
                 >
                     <MensagemList mensagens={mensagemList} setMensagemList={setMensagemList}/>
-                    {/* {mensagemList.map((mensagemAtual) => {
-                        console.log(mensagemAtual);
-                        return (
-                            <li key={mensagemAtual.id}>
-                                {mensagemAtual.de}: {mensagemAtual.msg}
-                            </li>
-                        );
-                    })} */}
                     <Box 
                         as="form"
                         onSubmit={function (enviarMsg) {
@@ -141,7 +146,11 @@ export default function ChatPage() {
                             }}
                             
                         />
-                        
+                        <ButtonSendSticker 
+                        onStickerClick ={(sticker) => {
+                            handleNovaMensagem(':sticker:' + sticker);
+                        }}/>
+
                         <Button disabled={mensagem === ''}
                             type='submit'
                             label='Enviar'
@@ -151,7 +160,6 @@ export default function ChatPage() {
                                 padding: '6px 8px',
                                 borderRadius: '5px',
                                 marginBottom: '10px',
-                                
                             }}
 
                             buttonColors={{
@@ -161,6 +169,7 @@ export default function ChatPage() {
                                 mainColorStrong: appConfig.theme.colors.primary[600],
                             }}
                         />
+                        
                     </Box>
                 </Box>
             </Box>
@@ -270,11 +279,10 @@ function MensagemList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
 
-                            <Button 
+                            <Button
                                 type='button'
                                 label={<MdDeleteOutline />}
                                 onClick={ ()=> {
-                                    
                                     deletarMsg(mensagem.id)
                                 }}                          
                                 styleSheet={{
@@ -289,7 +297,10 @@ function MensagemList(props) {
 
                             </Button>
                         </Box>
-                        {mensagem.msg}
+                        {mensagem.msg.startsWith(':sticker:')  
+                        ? (
+                            <Image src={mensagem.msg.replace(':sticker:', '')}/>
+                        ) : (mensagem.msg)}
                     </Text>
                 );
 
