@@ -12,14 +12,14 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-function escutaMsgEmTempoReal(adicionaMensagem){
+function escutaMensagensEmTempoReal(adicionaMensagem) {
     return supabaseClient
-    .from('mensagens')
-    .on('INSERT', ({ res }) => {
-        adicionaMensagem(res.new)
-    })
-    .subscribe();
-}
+      .from('mensagens')
+      .on('INSERT', (respostaLive) => {
+        adicionaMensagem(respostaLive.new);
+      })
+      .subscribe();
+  }
 
 export default function ChatPage() {
     const roteamento = useRouter();
@@ -33,24 +33,30 @@ export default function ChatPage() {
         .select('*')
         .order('id', {ascending: false})
         .then(({ data }) => {
-        console.log('Dados da consulta: ', data);
         setMensagemList(data);
     });
 
-    escutaMsgEmTempoReal((novaMensagem) => {
-        setMensagemList((valorAtualDaLista) =>{
-            return [
-                novaMensagem,
-                ...valorAtualDaLista,
-            ]
-        })
-    });
-    }, []); 
+    const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
+        console.log('Nova mensagem:', novaMensagem);
+        console.log('listaDeMensagens:', mensagemList);
+        
+        setMensagemList((valorAtualDaLista) => {
+          console.log('valorAtualDaLista:', valorAtualDaLista);
+          return [
+            novaMensagem,
+            ...valorAtualDaLista,
+          ]
+        });
+      });
+  
+      return () => {
+        subscription.unsubscribe();
+      }
+    }, []);
     
 
     function handleNovaMensagem(novaMensagem) {
-        const mensagemEnv = {
-           // id: mensagemList.length + 1,
+        const mensagem = {
             de: nomeLogado,
             msg: novaMensagem,
         };
@@ -58,7 +64,7 @@ export default function ChatPage() {
         supabaseClient
         .from('mensagens')
         .insert([
-            mensagemEnv
+            mensagem
         ])
 
         .then(({ data }) => {
@@ -279,7 +285,7 @@ function MensagemList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
 
-                            <Button
+                            <Button 
                                 type='button'
                                 label={<MdDeleteOutline />}
                                 onClick={ ()=> {
@@ -299,7 +305,11 @@ function MensagemList(props) {
                         </Box>
                         {mensagem.msg.startsWith(':sticker:')  
                         ? (
-                            <Image src={mensagem.msg.replace(':sticker:', '')}/>
+                            <Image src={mensagem.msg.replace(':sticker:', '')}
+                            styleSheet={{
+                                width: '270px',
+                                height:'200px',
+                            }}/>
                         ) : (mensagem.msg)}
                     </Text>
                 );
